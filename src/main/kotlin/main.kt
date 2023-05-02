@@ -1,4 +1,4 @@
-import com.formdev.flatlaf.FlatLightLaf
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
@@ -7,6 +7,7 @@ import org.jetbrains.skija.*
 import org.jetbrains.skiko.SkiaLayer
 import org.jetbrains.skiko.SkiaRenderer
 import org.jetbrains.skiko.SkiaWindow
+import java.awt.Dimension
 import java.awt.event.MouseEvent
 import java.awt.event.MouseMotionAdapter
 import java.lang.String.format
@@ -17,21 +18,21 @@ import kotlin.math.sin
 import kotlin.time.ExperimentalTime
 
 fun main() {
-    FlatLightLaf.setup()
-    HomeFrame()
-//    createWindow("Life Game")
+//    FlatLightLaf.setup()
+//    HomeFrame()
+    createWindow("Life Game")
 }
 
 fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
-
+//
     window.layer.renderer = Renderer(window.layer)
     window.layer.addMouseMotionListener(MouseMotionAdapter)
 
-    window.preferredSize.setSize(800, 600)
-    window.minimumSize.setSize(100, 100)
+    window.preferredSize = Dimension(800, 600)
+    window.minimumSize = Dimension(100, 100)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true

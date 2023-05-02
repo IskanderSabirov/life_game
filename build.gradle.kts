@@ -12,7 +12,6 @@ repositories {
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
-
 val osName = System.getProperty("os.name")
 val targetOs = when {
     osName == "Mac OS X" -> "macos"
@@ -36,25 +35,24 @@ if (project.hasProperty("skiko.version")) {
 }
 
 dependencies {
-
-    implementation(kotlin("stdlib"))
-    implementation("com.formdev:flatlaf:3.0")
-    testImplementation(kotlin("test"))
-
-    ///
-
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+
+
+    implementation("com.formdev:flatlaf:3.0")
+
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.4.1")
     implementation("org.jetbrains.skiko:skiko-jvm-runtime-$target:$version")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 
+    testImplementation(kotlin("test"))
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+
 application {
-    mainClass.set("MainKt")
+    mainClass.set("AppKt")
 }
