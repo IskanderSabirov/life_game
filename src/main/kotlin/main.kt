@@ -1,38 +1,58 @@
-
+import com.formdev.flatlaf.FlatLightLaf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
-import kotlinx.datetime.*
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.skija.*
 import org.jetbrains.skiko.SkiaLayer
 import org.jetbrains.skiko.SkiaRenderer
 import org.jetbrains.skiko.SkiaWindow
 import java.awt.Dimension
 import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
 import java.awt.event.MouseMotionAdapter
 import java.lang.String.format
 import javax.swing.WindowConstants
 import kotlin.math.cos
-import kotlin.math.min
 import kotlin.math.sin
 import kotlin.time.ExperimentalTime
 
+const val width = 20 * 20
+const val height = 20 * 20
+const val squareSize = 20
+
 fun main() {
-//    FlatLightLaf.setup()
+    FlatLightLaf.setup()
 //    HomeFrame()
-    createWindow("Life Game")
+    createWindow("Life Game", GameFiled(20, 20))
 }
 
-fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
-    val window = SkiaWindow()
+fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
+    val window = SkiaWindow().apply {
+        this.size = Dimension(width, height)
+        this.isResizable = true
+    }
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
-//
+
     window.layer.renderer = Renderer(window.layer)
     window.layer.addMouseMotionListener(MouseMotionAdapter)
 
-    window.preferredSize = Dimension(800, 600)
-    window.minimumSize = Dimension(100, 100)
+    val mouseListener: MouseListener = object : MouseListener {
+        override fun mouseClicked(e: MouseEvent) {
+            println(State.mouseX)
+        }
+
+        override fun mouseExited(e: MouseEvent) {}
+        override fun mousePressed(e: MouseEvent) {}
+        override fun mouseEntered(e: MouseEvent) {}
+        override fun mouseReleased(e: MouseEvent) {}
+    }
+
+//    window.preferredSize = Dimension(800, 600)
+//    window.minimumSize = Dimension(100, 100)
+    window.layer.addMouseListener(mouseListener)
+    window.setSize(width, height)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true
@@ -72,24 +92,30 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
-        val w = (width / contentScale).toInt()
-        val h = (height / contentScale).toInt()
+//        val w = (width / contentScale).toInt()
+//        val h = (height / contentScale).toInt()
+//
+//        val centerX = w / 2f
+//        val centerY = h / 2f
+//        val clockRadius = min(w, h) / 2f - 5
+//        val tickLen = 15f
+//
+//        displayClockFace(canvas, centerX, centerY, clockRadius, tickLen)
+//
+//        val now = Clock.System.now()
+//        val timeZone = TimeZone.currentSystemDefault()
+//        val midnight = Clock.System.todayAt(timeZone).atStartOfDayIn(timeZone)
+//        val msTime = (now - midnight).inWholeMilliseconds
+//
+//        displayClockHands(canvas, centerX, centerY, clockRadius, tickLen, msTime)
+//
+//        displayTime(canvas, now.toLocalDateTime(timeZone))
 
-        val centerX = w / 2f
-        val centerY = h / 2f
-        val clockRadius = min(w, h) / 2f - 5
-        val tickLen = 15f
 
-        displayClockFace(canvas, centerX, centerY, clockRadius, tickLen)
+        ///
+        drawFiledLines(canvas)
 
-        val now = Clock.System.now()
-        val timeZone = TimeZone.currentSystemDefault()
-        val midnight = Clock.System.todayAt(timeZone).atStartOfDayIn(timeZone)
-        val msTime = (now - midnight).inWholeMilliseconds
-
-        displayClockHands(canvas, centerX, centerY, clockRadius, tickLen, msTime)
-
-        displayTime(canvas, now.toLocalDateTime(timeZone))
+        drawFieldSquares(canvas)
 
         layer.needRedraw()
     }
@@ -183,3 +209,42 @@ object MouseMotionAdapter : MouseMotionAdapter() {
 }
 
 fun distanceSq(x1: Float, y1: Float, x2: Float, y2: Float) = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+
+
+fun drawFiledLines(canvas: Canvas) {
+    val paint = Paint().apply {
+        color = Color.makeRGB(0, 0, 0)
+        mode = PaintMode.STROKE
+        strokeWidth = 1f
+    }
+    for (i in 0..width step squareSize) {
+        canvas.drawLine(i.toFloat(), 0F, i.toFloat(), height.toFloat(), paint)
+    }
+
+    for (i in 0..height step squareSize) {
+        canvas.drawLine(0F, i.toFloat(), width.toFloat(), i.toFloat(), paint)
+    }
+}
+
+fun drawFieldSquares(canvas: Canvas) {
+    val paint = Paint().apply {
+        color = Color.makeRGB(123, 123, 123)
+    }
+
+    for (x in 0 until width step squareSize)
+        for (y in 0 until height step squareSize)
+            if ((x + y) / squareSize % 2 == 0) {
+                canvas.drawRect(
+                    Rect.makeXYWH(
+                        (x).toFloat(),
+                        (y).toFloat(),
+                        squareSize.toFloat(),
+                        squareSize.toFloat()
+                    ), paint
+                )
+            }
+}
+
+fun prin() {
+    println("${State}")
+}
