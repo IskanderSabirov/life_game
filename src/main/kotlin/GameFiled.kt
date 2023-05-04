@@ -3,10 +3,11 @@ import kotlinx.coroutines.GlobalScope
 class GameFiled(val width: Int = 20, val height: Int = 20) {
 
     private val defaultSquareSize = 20
+    var currentSquareSize = defaultSquareSize
+
 
     var isGoing = false
 
-    var currentSquareSize = defaultSquareSize
 
     private val field: List<Cell> = (0 until (width + 2) * (height + 2)).map {
         Cell(it % (width + 2), it / (width + 2))

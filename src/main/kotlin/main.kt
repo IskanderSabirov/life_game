@@ -1,6 +1,5 @@
 import com.formdev.flatlaf.FlatLightLaf
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
 import org.jetbrains.skija.*
@@ -12,11 +11,8 @@ import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.event.*
 import java.awt.event.MouseMotionAdapter
-import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.swing.JTextPane
 import javax.swing.WindowConstants
-import kotlin.concurrent.thread
 
 const val width = 20 * 20
 const val height = 20 * 20
@@ -52,7 +48,6 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     val mouseListener = object : MouseListener {
         override fun mouseClicked(e: MouseEvent) {
             pressed(game)
-//            println(window.width)
         }
 
         override fun mouseExited(e: MouseEvent) {}
@@ -74,9 +69,17 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         }
     }
 
+    val wheelListener = object : MouseWheelListener {
+        override fun mouseWheelMoved(e: MouseWheelEvent?) {
+            if (e == null)
+                return
+            resizeSquare(e.wheelRotation, game)
+        }
+    }
 
     window.layer.addMouseListener(mouseListener)
     window.layer.addKeyListener(keyListener)
+    window.layer.addMouseWheelListener(wheelListener)
     window.setSize(width, height)
     window.pack()
     window.layer.awaitRedraw()
@@ -126,8 +129,8 @@ fun drawCellWinStreak(canvas: Canvas, game: GameFiled) {
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
     val font = Font(typeface, 13f)
 
-    val x: Int = (State.mouseX / squareSize).toInt() + GlobalVariables.cornerX
-    val y: Int = (State.mouseY / squareSize).toInt() + GlobalVariables.cornerY
+    val x: Int = (State.mouseX / game.currentSquareSize).toInt() + GlobalVariables.cornerX
+    val y: Int = (State.mouseY / game.currentSquareSize).toInt() + GlobalVariables.cornerY
 
     if (!game.contains(x, y) || !game.getCell(x, y).isAlive) return
 
@@ -185,9 +188,15 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
 }
 
 fun pressed(game: GameFiled) {
-    val x: Int = (State.mouseX / squareSize).toInt() + GlobalVariables.cornerX
-    val y: Int = (State.mouseY / squareSize).toInt() + GlobalVariables.cornerY
+    val x: Int = (State.mouseX / game.currentSquareSize).toInt() + GlobalVariables.cornerX
+    val y: Int = (State.mouseY / game.currentSquareSize).toInt() + GlobalVariables.cornerY
     if (!game.contains(x, y)) return
     game.getCell(x, y).isAlive = !game.getCell(x, y).isAlive
     game.getCell(x, y).winStreak = 0
+}
+
+fun resizeSquare(change: Int, game: GameFiled) {
+    if (game.currentSquareSize - change >= GlobalVariables.minimumSquareSize)
+        game.currentSquareSize -= change
+//    println(change)
 }
