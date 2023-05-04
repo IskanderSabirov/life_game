@@ -1,5 +1,6 @@
 class GlobalVariables {
     companion object {
+
         var cornerX =1
         var cornerY = 1
 

@@ -1,3 +1,5 @@
+import kotlinx.coroutines.GlobalScope
+
 class GameFiled(val width: Int = 20, val height: Int = 20) {
 
     private val defaultSquareSize = 20
@@ -25,10 +27,8 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         }
 
         fun changeState() {
-            if (this.isAlive)
-                willLive = GlobalVariables.needToSurvive.contains(this.countAliveNeighbours())
-            else
-                willLive = this.countAliveNeighbours() in GlobalVariables.needToBurn
+            willLive =
+                this.countAliveNeighbours() in if (isAlive) GlobalVariables.needToSurvive else GlobalVariables.needToBurn
         }
 
         fun isInFiled() = this.x in (1..width) && this.y in (1..height)
@@ -43,6 +43,10 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
             it.changeState()
         }
         field.filter { it.isInFiled() }.forEach {
+            if (it.isAlive && it.willLive)
+                it.winStreak++
+            else
+                it.winStreak = 0
             it.isAlive = it.willLive
         }
     }
@@ -63,7 +67,13 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
     fun clearField() {
         field.forEach {
             it.isAlive = false
+            it.winStreak = 0
         }
+    }
+
+
+    fun contains(x: Int, y: Int): Boolean {
+        return (x in (1..width) && y in (1..height))
     }
 
 

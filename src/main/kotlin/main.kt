@@ -113,6 +113,8 @@ class Renderer(val layer: SkiaLayer, var game: GameFiled) : SkiaRenderer {
 
         drawFieldSquares(canvas, game)
 
+        drawCellWinStreak(canvas, game)
+
         layer.needRedraw()
     }
 
@@ -130,7 +132,24 @@ object MouseMotionAdapter : MouseMotionAdapter() {
     }
 }
 
-fun distanceSq(x1: Float, y1: Float, x2: Float, y2: Float) = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+fun drawCellWinStreak(canvas: Canvas, game: GameFiled) {
+    val paint = Paint().apply {
+        color = Color.makeRGB(0, 0, 0)
+        mode = PaintMode.STROKE
+        strokeWidth = 1f
+    }
+    val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
+    val font = Font(typeface, 13f)
+
+    val x: Int = (State.mouseX / squareSize).toInt() + 1
+    val y: Int = (State.mouseY / squareSize).toInt() + 1
+
+    if (!game.contains(x, y) || !game.getCeil(x, y).isAlive)
+        return
+
+    val text = "alive: ${game.getCeil(x, y).winStreak} moves"
+    canvas.drawString(text, State.mouseX, State.mouseY, font, paint)
+}
 
 
 fun drawFiledLines(canvas: Canvas, game: GameFiled) {
@@ -139,7 +158,7 @@ fun drawFiledLines(canvas: Canvas, game: GameFiled) {
         mode = PaintMode.STROKE
         strokeWidth = 1f
     }
-    for (i in 0..game.width) {
+    for (i in GlobalVariables.cornerX - 1..game.width) {
         canvas.drawLine(
             i.toFloat() * game.currentSquareSize,
             0F,
@@ -149,7 +168,7 @@ fun drawFiledLines(canvas: Canvas, game: GameFiled) {
         )
     }
 
-    for (i in 0..game.height) {
+    for (i in GlobalVariables.cornerY - 1..game.height) {
         canvas.drawLine(
             0F,
             i.toFloat() * game.currentSquareSize,
@@ -165,8 +184,8 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
         color = Color.makeRGB(123, 123, 123)
     }
 
-    for (x in 1..game.width)
-        for (y in 1..game.height)
+    for (x in GlobalVariables.cornerX..game.width)
+        for (y in GlobalVariables.cornerY..game.height)
             if (game.getCeil(x, y).isAlive) {
                 canvas.drawRect(
                     Rect.makeXYWH(
@@ -180,11 +199,10 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
 }
 
 fun pressed(game: GameFiled) {
-    if (!(State.mouseX <= game.width * game.currentSquareSize && State.mouseY <= game.height * game.currentSquareSize))
+    val x: Int = (State.mouseX / squareSize).toInt() + 1
+    val y: Int = (State.mouseY / squareSize).toInt() + 1
+    if (!game.contains(x, y))
         return
-    val x: Int = (State.mouseX / squareSize).toInt()
-    val y: Int = (State.mouseY / squareSize).toInt()
-    print(x)
-    println(y)
-    game.getCeil(x + 1, y + 1).isAlive = !game.getCeil(x + 1, y + 1).isAlive
+    game.getCeil(x, y).isAlive = !game.getCeil(x, y).isAlive
+    game.getCeil(x, y).winStreak = 0
 }
