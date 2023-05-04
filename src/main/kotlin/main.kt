@@ -2,20 +2,17 @@ import com.formdev.flatlaf.FlatLightLaf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
-import kotlinx.datetime.LocalDateTime
 import org.jetbrains.skija.*
 import org.jetbrains.skiko.SkiaLayer
 import org.jetbrains.skiko.SkiaRenderer
 import org.jetbrains.skiko.SkiaWindow
+import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
+import java.awt.GridLayout
+import java.awt.event.*
 import java.awt.event.MouseMotionAdapter
-import java.lang.String.format
+import javax.swing.JPanel
 import javax.swing.WindowConstants
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.time.ExperimentalTime
 
 const val width = 20 * 20
 const val height = 20 * 20
@@ -24,23 +21,34 @@ const val squareSize = 20
 fun main() {
     FlatLightLaf.setup()
 //    HomeFrame()
-    createWindow("Life Game", GameFiled(20, 20))
+    createWindow("Life Game", GameFiled(22, 22))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow().apply {
-        this.size = Dimension(width, height)
-        this.isResizable = true
+        setLocationRelativeTo(null)
+        preferredSize = Dimension(605, 600)
+        isResizable = false
+        defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+        this.title = title
     }
-    window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-    window.title = title
 
-    window.layer.renderer = Renderer(window.layer)
+    window.layer.renderer = Renderer(window.layer, game)
+
+    window.add(JPanel().apply {
+        layout = GridLayout(4, 1, 4, 4)
+        add(OneMoveButton("Make one move", game))
+        add(GenerateFieldButton("Generate Field", game))
+        add(ClearFieldButton("Clear Field", game))
+        add(Button(game))
+    }, BorderLayout.WEST)
+
     window.layer.addMouseMotionListener(MouseMotionAdapter)
 
     val mouseListener: MouseListener = object : MouseListener {
         override fun mouseClicked(e: MouseEvent) {
-            println(State.mouseX)
+            pressed(game)
+            println(window.getWidth())
         }
 
         override fun mouseExited(e: MouseEvent) {}
@@ -49,16 +57,25 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         override fun mouseReleased(e: MouseEvent) {}
     }
 
-//    window.preferredSize = Dimension(800, 600)
-//    window.minimumSize = Dimension(100, 100)
+    val keyListener: KeyListener = object : KeyListener {
+        override fun keyTyped(e: KeyEvent) {}
+
+        override fun keyReleased(e: KeyEvent) {}
+
+        override fun keyPressed(e: KeyEvent) {}
+
+    }
+
+
     window.layer.addMouseListener(mouseListener)
+    window.layer.addKeyListener(keyListener)
     window.setSize(width, height)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true
 }
 
-class Renderer(val layer: SkiaLayer) : SkiaRenderer {
+class Renderer(val layer: SkiaLayer, var game: GameFiled) : SkiaRenderer {
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
     val font = Font(typeface, 40f)
     val paint = Paint().apply {
@@ -88,112 +105,17 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
         strokeWidth = 3f
     }
 
-    @ExperimentalTime
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
-//        val w = (width / contentScale).toInt()
-//        val h = (height / contentScale).toInt()
-//
-//        val centerX = w / 2f
-//        val centerY = h / 2f
-//        val clockRadius = min(w, h) / 2f - 5
-//        val tickLen = 15f
-//
-//        displayClockFace(canvas, centerX, centerY, clockRadius, tickLen)
-//
-//        val now = Clock.System.now()
-//        val timeZone = TimeZone.currentSystemDefault()
-//        val midnight = Clock.System.todayAt(timeZone).atStartOfDayIn(timeZone)
-//        val msTime = (now - midnight).inWholeMilliseconds
-//
-//        displayClockHands(canvas, centerX, centerY, clockRadius, tickLen, msTime)
-//
-//        displayTime(canvas, now.toLocalDateTime(timeZone))
 
+        drawFiledLines(canvas, game)
 
-        ///
-        drawFiledLines(canvas)
-
-        drawFieldSquares(canvas)
+        drawFieldSquares(canvas, game)
 
         layer.needRedraw()
     }
 
-    private fun displayTime(canvas: Canvas, localDateTime: LocalDateTime) {
-        val text = format("%02d:%02d:%02d", localDateTime.hour, localDateTime.minute, localDateTime.second)
-
-        canvas.drawString(text, State.mouseX, State.mouseY, font, paint)
-    }
-
-    private fun displayClockFace(canvas: Canvas, centerX: Float, centerY: Float, clockRadius: Float, tickLen: Float) {
-
-        val x = centerX - clockRadius
-        val y = centerY - clockRadius
-
-        val hover = distanceSq(centerX, centerY, State.mouseX, State.mouseY) <= clockRadius * clockRadius
-
-        val fill = if (hover) clockFillHover else clockFill
-
-        val clockRect = Rect.makeXYWH(x, y, clockRadius * 2, clockRadius * 2)
-        canvas.drawOval(clockRect, fill)
-        canvas.drawOval(clockRect, clockStroke)
-        clockTicks(canvas, clockStroke, centerX, tickLen / 3, centerY, clockRadius, 60)
-        clockTicks(canvas, clockStroke, centerX, tickLen, centerY, clockRadius, 12)
-    }
-
-    private fun displayClockHands(
-        canvas: Canvas, centerX: Float, centerY: Float, clockRadius: Float, tickLen: Float,
-        msTime: Long
-    ) {
-
-        val secShare = msTime / 60000f
-        // Секундная стрелка
-        clockHand(canvas, clockStrokeS, centerX, centerY, secShare, clockRadius - tickLen)
-        // Минутная стрелка
-        clockHand(canvas, clockStrokeMH, centerX, centerY, secShare / 60, clockRadius - tickLen)
-        // Часовая стрелка
-        clockHand(canvas, clockStrokeMH, centerX, centerY, secShare / 60 / 12, (clockRadius - tickLen) / 2)
-    }
-
-    private fun clockTicks(
-        canvas: Canvas,
-        clockStroke: Paint,
-        centerX: Float,
-        tickLen: Float,
-        centerY: Float,
-        clockRadius: Float,
-        qty: Int
-    ) {
-        var angle = 0f
-        while (angle < 2f * Math.PI) {
-            canvas.drawLine(
-                (centerX + (clockRadius - tickLen) * cos(angle)),
-                (centerY - (clockRadius - tickLen) * sin(angle)),
-                (centerX + clockRadius * cos(angle)),
-                (centerY - clockRadius * sin(angle)),
-                clockStroke
-            )
-            angle += (2.0 * Math.PI / qty).toFloat()
-        }
-    }
-
-    private fun clockHand(
-        canvas: Canvas,
-        stroke: Paint,
-        centerX: Float,
-        centerY: Float,
-        clockShare: Float,
-        length: Float
-    ) {
-        val angle = ((0.5 - clockShare * 2) * Math.PI).toFloat()
-        canvas.drawLine(
-            centerX, centerY,
-            centerX + length * cos(angle),
-            centerY - length * sin(angle),
-            stroke
-        )
-    }
 }
 
 object State {
@@ -211,40 +133,58 @@ object MouseMotionAdapter : MouseMotionAdapter() {
 fun distanceSq(x1: Float, y1: Float, x2: Float, y2: Float) = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
 
 
-fun drawFiledLines(canvas: Canvas) {
+fun drawFiledLines(canvas: Canvas, game: GameFiled) {
     val paint = Paint().apply {
         color = Color.makeRGB(0, 0, 0)
         mode = PaintMode.STROKE
         strokeWidth = 1f
     }
-    for (i in 0..width step squareSize) {
-        canvas.drawLine(i.toFloat(), 0F, i.toFloat(), height.toFloat(), paint)
+    for (i in 0..game.width) {
+        canvas.drawLine(
+            i.toFloat() * game.currentSquareSize,
+            0F,
+            i.toFloat() * game.currentSquareSize,
+            game.height * game.currentSquareSize.toFloat(),
+            paint
+        )
     }
 
-    for (i in 0..height step squareSize) {
-        canvas.drawLine(0F, i.toFloat(), width.toFloat(), i.toFloat(), paint)
+    for (i in 0..game.height) {
+        canvas.drawLine(
+            0F,
+            i.toFloat() * game.currentSquareSize,
+            game.width * game.currentSquareSize.toFloat(),
+            i.toFloat() * game.currentSquareSize,
+            paint
+        )
     }
 }
 
-fun drawFieldSquares(canvas: Canvas) {
+fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
     val paint = Paint().apply {
         color = Color.makeRGB(123, 123, 123)
     }
 
-    for (x in 0 until width step squareSize)
-        for (y in 0 until height step squareSize)
-            if ((x + y) / squareSize % 2 == 0) {
+    for (x in 1..game.width)
+        for (y in 1..game.height)
+            if (game.getCeil(x, y).isAlive) {
                 canvas.drawRect(
                     Rect.makeXYWH(
-                        (x).toFloat(),
-                        (y).toFloat(),
-                        squareSize.toFloat(),
-                        squareSize.toFloat()
+                        (x - 1).toFloat() * game.currentSquareSize,
+                        (y - 1).toFloat() * game.currentSquareSize,
+                        game.currentSquareSize.toFloat(),
+                        game.currentSquareSize.toFloat()
                     ), paint
                 )
             }
 }
 
-fun prin() {
-    println("${State}")
+fun pressed(game: GameFiled) {
+    if (!(State.mouseX <= game.width * game.currentSquareSize && State.mouseY <= game.height * game.currentSquareSize))
+        return
+    val x: Int = (State.mouseX / squareSize).toInt()
+    val y: Int = (State.mouseY / squareSize).toInt()
+    print(x)
+    println(y)
+    game.getCeil(x + 1, y + 1).isAlive = !game.getCeil(x + 1, y + 1).isAlive
 }

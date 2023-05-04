@@ -28,7 +28,6 @@ class HomeFrame : JFrame("My first GUI") {
                 })
             }, BorderLayout.WEST)
 
-            add(Button())
 
             add(Box.createVerticalGlue())
         }, BorderLayout.WEST)
