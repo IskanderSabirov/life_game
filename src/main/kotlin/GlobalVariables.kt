@@ -4,7 +4,7 @@ class GlobalVariables {
         var cornerX =1
         var cornerY = 1
 
-        val ceilNeighbours = listOf(
+        val CellNeighbours = listOf(
             Pair(1, 0),
             Pair(1, -1),
             Pair(1, 1),

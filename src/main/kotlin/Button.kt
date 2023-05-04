@@ -23,34 +23,34 @@ class Button(game: GameFiled) : MyButton("First Button", game) {
     }
 }
 
-class OneMoveButton(label: String, game: GameFiled) : MyButton(label, game) {
+class OneMoveButton(game: GameFiled) : MyButton("Make one move", game) {
     override fun action() {
         game.makeOneMove()
     }
 }
 
-class GenerateFieldButton(label: String, game: GameFiled) : MyButton(label, game) {
+class GenerateFieldButton(game: GameFiled) : MyButton("Generate Field", game) {
     override fun action() {
         game.generateField()
     }
 }
 
 
-class ClearFieldButton(label: String, game: GameFiled) : MyButton(label, game) {
+class ClearFieldButton(game: GameFiled) : MyButton("Clear Field", game) {
     override fun action() {
         game.clearField()
     }
 }
 
 
-class StartButton(label: String, game: GameFiled) : MyButton(label, game) {
+class StartButton(game: GameFiled) : MyButton("Start", game) {
     override fun action() {
         game.isGoing = true
     }
 }
 
 
-class StopButton(label: String, game: GameFiled) : MyButton(label, game) {
+class StopButton(game: GameFiled) : MyButton("Stop", game) {
     override fun action() {
         game.isGoing = false
     }

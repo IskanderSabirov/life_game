@@ -8,18 +8,18 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
 
     var currentSquareSize = defaultSquareSize
 
-    private val field: List<Ceil> = (0 until (width + 2) * (height + 2)).map {
-        Ceil(it % (width + 2), it / (width + 2))
+    private val field: List<Cell> = (0 until (width + 2) * (height + 2)).map {
+        Cell(it % (width + 2), it / (width + 2))
     }
 
-    inner class Ceil(val x: Int, val y: Int) {
+    inner class Cell(val x: Int, val y: Int) {
         var isAlive = false
         var willLive = false
         var winStreak: Int = 0
 
-        private fun getNeighbours(): List<Ceil> {
+        private fun getNeighbours(): List<Cell> {
             return if (this.x == 0 || this.x == width + 1 || this.y == 0 || this.y == height + 1) emptyList()
-            else GlobalVariables.ceilNeighbours.map { getCeil(it.first + this.x, it.second + this.y) }
+            else GlobalVariables.CellNeighbours.map { getCell(it.first + this.x, it.second + this.y) }
         }
 
         fun countAliveNeighbours(): Int {
@@ -35,7 +35,7 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
 
     }
 
-    fun getCeil(x: Int, y: Int): Ceil = field[y * (width + 2) + x]
+    fun getCell(x: Int, y: Int): Cell = field[y * (width + 2) + x]
 
     fun makeOneMove() {
 
