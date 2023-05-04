@@ -1,5 +1,6 @@
 import com.formdev.flatlaf.FlatLightLaf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
 import org.jetbrains.skija.*
@@ -13,6 +14,7 @@ import java.awt.event.*
 import java.awt.event.MouseMotionAdapter
 import javax.swing.JPanel
 import javax.swing.WindowConstants
+import kotlin.concurrent.thread
 
 const val width = 20 * 20
 const val height = 20 * 20
@@ -36,11 +38,12 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.layer.renderer = Renderer(window.layer, game)
 
     window.add(JPanel().apply {
-        layout = GridLayout(4, 1, 4, 4)
+        layout = GridLayout(5, 1, 4, 4)
         add(OneMoveButton("Make one move", game))
         add(GenerateFieldButton("Generate Field", game))
         add(ClearFieldButton("Clear Field", game))
-        add(Button(game))
+        add(StartButton("Start", game))
+        add(StopButton("Stop", game))
     }, BorderLayout.WEST)
 
     window.layer.addMouseMotionListener(MouseMotionAdapter)
@@ -48,7 +51,7 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     val mouseListener: MouseListener = object : MouseListener {
         override fun mouseClicked(e: MouseEvent) {
             pressed(game)
-            println(window.getWidth())
+            println(window.width)
         }
 
         override fun mouseExited(e: MouseEvent) {}
@@ -76,7 +79,7 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
 }
 
 class Renderer(val layer: SkiaLayer, var game: GameFiled) : SkiaRenderer {
-    val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
+    private val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
     val font = Font(typeface, 40f)
     val paint = Paint().apply {
         color = 0xff9BC730L.toInt()
@@ -114,7 +117,10 @@ class Renderer(val layer: SkiaLayer, var game: GameFiled) : SkiaRenderer {
         drawFieldSquares(canvas, game)
 
         drawCellWinStreak(canvas, game)
-
+        if (game.isGoing) {
+            game.makeOneMove()
+            Thread.sleep(100)
+        }
         layer.needRedraw()
     }
 

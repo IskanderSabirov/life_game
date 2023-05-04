@@ -4,7 +4,7 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
 
     private val defaultSquareSize = 20
 
-    val isGoing = false
+    var isGoing = false
 
     var currentSquareSize = defaultSquareSize
 

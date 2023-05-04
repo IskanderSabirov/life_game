@@ -43,5 +43,19 @@ class ClearFieldButton(label: String, game: GameFiled) : MyButton(label, game) {
 }
 
 
+class StartButton(label: String, game: GameFiled) : MyButton(label, game) {
+    override fun action() {
+        game.isGoing = true
+    }
+}
+
+
+class StopButton(label: String, game: GameFiled) : MyButton(label, game) {
+    override fun action() {
+        game.isGoing = false
+    }
+}
+
+
 
 
