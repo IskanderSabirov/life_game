@@ -14,9 +14,6 @@ import java.awt.event.MouseMotionAdapter
 import javax.swing.JPanel
 import javax.swing.WindowConstants
 
-const val width = 20 * 20
-const val height = 20 * 20
-const val squareSize = 20
 
 fun main() {
     FlatLightLaf.setup()
@@ -61,10 +58,10 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         override fun keyReleased(e: KeyEvent) {}
         override fun keyPressed(e: KeyEvent) {
             when (e.keyCode) {
-                KeyEvent.VK_W -> if (GlobalVariables.cornerY > 1) GlobalVariables.cornerY--
-                KeyEvent.VK_S -> if (GlobalVariables.cornerY < game.height) GlobalVariables.cornerY++
-                KeyEvent.VK_A -> if (GlobalVariables.cornerX > 1) GlobalVariables.cornerX--
-                KeyEvent.VK_D -> if (GlobalVariables.cornerX < game.width) GlobalVariables.cornerX++
+                KeyEvent.VK_W -> if (game.cornerY > GlobalVariables.minimalCorner) game.cornerY--
+                KeyEvent.VK_S -> if (game.cornerY < game.height) game.cornerY++
+                KeyEvent.VK_A -> if (game.cornerX > GlobalVariables.minimalCorner) game.cornerX--
+                KeyEvent.VK_D -> if (game.cornerX < game.width) game.cornerX++
             }
         }
     }
@@ -80,13 +77,13 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.layer.addMouseListener(mouseListener)
     window.layer.addKeyListener(keyListener)
     window.layer.addMouseWheelListener(wheelListener)
-    window.setSize(width, height)
+    window.setSize(GlobalVariables.windowWidth, GlobalVariables.windowHeight)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true
 }
 
-class Renderer(val layer: SkiaLayer, var game: GameFiled) : SkiaRenderer {
+class Renderer(private val layer: SkiaLayer, private var game: GameFiled) : SkiaRenderer {
 
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
 
@@ -129,8 +126,8 @@ fun drawCellWinStreak(canvas: Canvas, game: GameFiled) {
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
     val font = Font(typeface, 13f)
 
-    val x: Int = (State.mouseX / game.currentSquareSize).toInt() + GlobalVariables.cornerX
-    val y: Int = (State.mouseY / game.currentSquareSize).toInt() + GlobalVariables.cornerY
+    val x: Int = (State.mouseX / game.currentSquareSize).toInt() + game.cornerX
+    val y: Int = (State.mouseY / game.currentSquareSize).toInt() + game.cornerY
 
     if (!game.contains(x, y) || !game.getCell(x, y).isAlive) return
 
@@ -145,21 +142,21 @@ fun drawFiledLines(canvas: Canvas, game: GameFiled) {
         mode = PaintMode.STROKE
         strokeWidth = 1f
     }
-    for (i in 1..game.width - GlobalVariables.cornerX + 1) {
+    for (i in 1..game.width - game.cornerX + 1) {
         canvas.drawLine(
             i.toFloat() * game.currentSquareSize,
             0F,
             i.toFloat() * game.currentSquareSize,
-            game.height * game.currentSquareSize.toFloat() - (GlobalVariables.cornerY - 1) * game.currentSquareSize.toFloat(),
+            game.height * game.currentSquareSize.toFloat() - (game.cornerY - 1) * game.currentSquareSize.toFloat(),
             paint
         )
     }
 
-    for (i in 1..game.height - GlobalVariables.cornerY + 1) {
+    for (i in 1..game.height - game.cornerY + 1) {
         canvas.drawLine(
             0F,
             i.toFloat() * game.currentSquareSize,
-            game.width * game.currentSquareSize.toFloat() - (GlobalVariables.cornerX - 1) * game.currentSquareSize.toFloat(),
+            game.width * game.currentSquareSize.toFloat() - (game.cornerX - 1) * game.currentSquareSize.toFloat(),
             i.toFloat() * game.currentSquareSize,
             paint
         )
@@ -171,15 +168,15 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
         color = Color.makeRGB(123, 123, 123)
     }
 
-    for (x in GlobalVariables.cornerX..game.width) for (y in GlobalVariables.cornerY..game.height) if (game.contains(
+    for (x in game.cornerX..game.width) for (y in game.cornerY..game.height) if (game.contains(
             x,
             y
         ) && game.getCell(x, y).isAlive
     ) {
         canvas.drawRect(
             Rect.makeXYWH(
-                (x - GlobalVariables.cornerX).toFloat() * game.currentSquareSize,
-                (y - GlobalVariables.cornerY).toFloat() * game.currentSquareSize,
+                (x - game.cornerX).toFloat() * game.currentSquareSize,
+                (y - game.cornerY).toFloat() * game.currentSquareSize,
                 game.currentSquareSize.toFloat(),
                 game.currentSquareSize.toFloat()
             ), paint
@@ -188,8 +185,8 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
 }
 
 fun pressed(game: GameFiled) {
-    val x: Int = (State.mouseX / game.currentSquareSize).toInt() + GlobalVariables.cornerX
-    val y: Int = (State.mouseY / game.currentSquareSize).toInt() + GlobalVariables.cornerY
+    val x: Int = (State.mouseX / game.currentSquareSize).toInt() + game.cornerX
+    val y: Int = (State.mouseY / game.currentSquareSize).toInt() + game.cornerY
     if (!game.contains(x, y)) return
     game.getCell(x, y).isAlive = !game.getCell(x, y).isAlive
     game.getCell(x, y).winStreak = 0

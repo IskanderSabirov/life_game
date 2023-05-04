@@ -1,22 +1,13 @@
 class GlobalVariables {
     companion object {
 
-        var cornerX = 1
+        const val minimumSquareSize = 5
 
-        var cornerY = 1
+        const val minimalCorner = 1
 
-        val minimumSquareSize = 5
+        const val windowWidth = 20 * 20
 
-        val CellNeighbours = listOf(
-            Pair(1, 0),
-            Pair(1, -1),
-            Pair(1, 1),
-            Pair(0, 1),
-            Pair(0, -1),
-            Pair(-1, 0),
-            Pair(-1, -1),
-            Pair(-1, 1)
-        )
+        const val windowHeight = 20 * 20
 
         var needToSurvive = listOf(2, 3)
         var needToBurn = listOf(3)

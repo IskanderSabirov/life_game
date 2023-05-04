@@ -1,9 +1,22 @@
-import kotlinx.coroutines.GlobalScope
-
 class GameFiled(val width: Int = 20, val height: Int = 20) {
 
     private val defaultSquareSize = 20
     var currentSquareSize = defaultSquareSize
+
+    var cornerX = 1
+
+    var cornerY = 1
+
+    private val cellNeighbours = listOf(
+        Pair(1, 0),
+        Pair(1, -1),
+        Pair(1, 1),
+        Pair(0, 1),
+        Pair(0, -1),
+        Pair(-1, 0),
+        Pair(-1, -1),
+        Pair(-1, 1)
+    )
 
 
     var isGoing = false
@@ -13,17 +26,17 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         Cell(it % (width + 2), it / (width + 2))
     }
 
-    inner class Cell(val x: Int, val y: Int) {
+    inner class Cell(private val x: Int, private val y: Int) {
         var isAlive = false
         var willLive = false
         var winStreak: Int = 0
 
         private fun getNeighbours(): List<Cell> {
             return if (this.x == 0 || this.x == width + 1 || this.y == 0 || this.y == height + 1) emptyList()
-            else GlobalVariables.CellNeighbours.map { getCell(it.first + this.x, it.second + this.y) }
+            else cellNeighbours.map { getCell(it.first + this.x, it.second + this.y) }
         }
 
-        fun countAliveNeighbours(): Int {
+        private fun countAliveNeighbours(): Int {
             return this.getNeighbours().count { it.isAlive }
         }
 
