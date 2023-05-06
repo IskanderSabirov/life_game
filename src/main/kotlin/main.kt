@@ -17,7 +17,7 @@ import javax.swing.WindowConstants
 
 fun main() {
     FlatLightLaf.setup()
-    createWindow("Life Game", GameFiled(100, 100))
+    createWindow("Life Game", GameFiled(1024, 1024))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
@@ -197,8 +197,9 @@ fun pressed(game: GameFiled) {
     val y: Int = (State.mouseY / game.currentSquareSize).toInt() + game.cornerY
     if (!game.contains(x, y)) return
     val cell = game.getCell(x, y)
-    cell.color = if (cell.isAlive) Colors.deadColor() else GlobalVariables.currentColor
-    cell.isAlive = !cell.isAlive
+    cell.color =
+        if (cell.color != GlobalVariables.currentColor || !cell.isAlive) GlobalVariables.currentColor else Colors.deadColor()
+    cell.isAlive = (cell.color == GlobalVariables.currentColor)
     game.getCell(x, y).winStreak = 0
 }
 
