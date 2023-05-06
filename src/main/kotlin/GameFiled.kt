@@ -27,6 +27,7 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
     }
 
     inner class Cell(private val x: Int, private val y: Int, var color: Int = 0) {
+        var nextMoveColor = 0
         var isAlive = false
         var willLive = false
         var winStreak: Int = 0
@@ -36,15 +37,38 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
             else cellNeighbours.map { getCell(it.first + this.x, it.second + this.y) }
         }
 
-        private fun countAliveNeighbours(): Int {
-            return this.getNeighbours().count { it.isAlive }
+        private fun countAliveNeighboursForAlive(): Int {  // считает кол-во живых соседей такого же цвета
+            return this.getNeighbours().count { it.isAlive && it.color == this.color }
+        }
+
+        private fun countAliveNeighboursForDead(): MutableMap<Int, Int> { // возвращает словарь типа <номер цвета, кол-во соседей>
+            val result = mutableMapOf<Int, Int>()
+            this.getNeighbours().forEach {
+                if (it.color != Colors.deadColor()) {
+                    if (!result.containsKey(it.color))
+                        result[it.color] = 0
+                    result[it.color] = result[it.color]!! + 1
+                }
+            }
+            return result
         }
 
         fun changeState() {
-            willLive =
-                this.countAliveNeighbours() in if (isAlive) GlobalVariables.needToSurvive else GlobalVariables.needToBurn
-            if (!willLive && isAlive)
-                color = Colors.deadColor()
+            nextMoveColor = Colors.deadColor()
+            if (isAlive) {
+                willLive = countAliveNeighboursForAlive() in GlobalVariables.needToSurvive
+                if (willLive)
+                    nextMoveColor = color
+            } else {
+                willLive = false
+                countAliveNeighboursForDead().forEach {
+                    if (it.value in GlobalVariables.needToBurn) {
+                        nextMoveColor = it.key
+                        willLive = true
+                    }
+                }
+            }
+
         }
 
         fun isInFiled() = this.x in (1..width) && this.y in (1..height)
@@ -64,9 +88,10 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
             else
                 it.winStreak = 0
             it.isAlive = it.willLive
+            it.color = it.nextMoveColor
         }
 
-        Thread.sleep(100)
+//        Thread.sleep(100)
     }
 
 
