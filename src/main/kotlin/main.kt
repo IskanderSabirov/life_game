@@ -17,13 +17,13 @@ import javax.swing.WindowConstants
 
 fun main() {
     FlatLightLaf.setup()
-    createWindow("Life Game", GameFiled(1024, 1024))
+    createWindow("Life Game", GameFiled(500, 500))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow().apply {
         setLocationRelativeTo(null)
-        preferredSize = Dimension(800, 800)
+        preferredSize = Dimension(GlobalVariables.windowWidth, GlobalVariables.windowHeight)
         isResizable = false
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
         this.title = title
@@ -32,12 +32,14 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.layer.renderer = Renderer(window.layer, game)
 
     window.add(JPanel().apply {
-        layout = GridLayout(5, 1, 3, 3)
+        layout = GridLayout(7, 1, 3, 3)
         add(OneMoveButton(game))
         add(GenerateFieldButton(game))
         add(ClearFieldButton(game))
         add(StartButton(game))
         add(StopButton(game))
+        add(MakeAnyMovesButton(game))
+        add(ChangeRulesButton(game))
     }, BorderLayout.WEST)
 
     window.layer.addMouseMotionListener(MouseMotionAdapter)
@@ -100,6 +102,7 @@ class Renderer(private val layer: SkiaLayer, private var game: GameFiled) : Skia
             game.makeOneMove()
 //            Thread.sleep(100)
         }
+
         layer.needRedraw()
     }
 
@@ -168,20 +171,18 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
         color = Color.makeRGB(123, 123, 123)
     }
 
-    for (x in game.cornerX..game.width) for (y in game.cornerY..game.height) if (game.contains(
-            x,
-            y
-        ) && game.getCell(x, y).isAlive
-    ) {
-        canvas.drawRect(
-            Rect.makeXYWH(
-                (x - game.cornerX).toFloat() * game.currentSquareSize,
-                (y - game.cornerY).toFloat() * game.currentSquareSize,
-                game.currentSquareSize.toFloat(),
-                game.currentSquareSize.toFloat()
-            ), paint
-        )
-    }
+    for (x in game.cornerX..game.width)
+        for (y in game.cornerY..game.height)
+            if (game.contains(x, y) && game.getCell(x, y).isAlive) {
+                canvas.drawRect(
+                    Rect.makeXYWH(
+                        (x - game.cornerX).toFloat() * game.currentSquareSize,
+                        (y - game.cornerY).toFloat() * game.currentSquareSize,
+                        game.currentSquareSize.toFloat(),
+                        game.currentSquareSize.toFloat()
+                    ), paint
+                )
+            }
 }
 
 fun pressed(game: GameFiled) {

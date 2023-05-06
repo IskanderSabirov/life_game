@@ -63,12 +63,15 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
                 it.winStreak = 0
             it.isAlive = it.willLive
         }
+
+        Thread.sleep(100)
     }
 
 
     fun makeMoves(count: Int) {
         repeat(count) {
             makeOneMove()
+//            Thread.sleep(100)
         }
     }
 
