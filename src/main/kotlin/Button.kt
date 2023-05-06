@@ -1,3 +1,5 @@
+import org.jetbrains.skija.Paint
+import org.jetbrains.skija.Rect
 import java.awt.Dimension
 import javax.swing.JButton
 import javax.swing.JFrame
@@ -107,6 +109,27 @@ class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
         return result
     }
 
+}
+
+class AddNewColorButton(game: GameFiled) : MyButton("Add new color", game) {
+    override fun action() {
+        Colors.addNewColor()
+    }
+}
+
+
+class ChooseColorButton(game: GameFiled) : MyButton("Choose current color", game) {
+    override fun action() {
+        val result = JOptionPane.showInputDialog(
+            null,
+            "Write chosen color (1 - ${Colors.colorsCount}):"
+        ).toIntOrNull()
+        if (result == null || result < 1 ||result > Colors.colorsCount)
+            JOptionPane.showMessageDialog(null, "Incorrect data to change rules")
+
+        GlobalVariables.currentColor = result!!
+
+    }
 }
 
 

@@ -17,7 +17,7 @@ import javax.swing.WindowConstants
 
 fun main() {
     FlatLightLaf.setup()
-    createWindow("Life Game", GameFiled(500, 500))
+    createWindow("Life Game", GameFiled(5, 5))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
@@ -32,7 +32,7 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.layer.renderer = Renderer(window.layer, game)
 
     window.add(JPanel().apply {
-        layout = GridLayout(7, 1, 3, 3)
+        layout = GridLayout(9, 1, 3, 3)
         add(OneMoveButton(game))
         add(GenerateFieldButton(game))
         add(ClearFieldButton(game))
@@ -40,6 +40,8 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         add(StopButton(game))
         add(MakeAnyMovesButton(game))
         add(ChangeRulesButton(game))
+        add(AddNewColorButton(game))
+        add(ChooseColorButton(game))
     }, BorderLayout.WEST)
 
     window.layer.addMouseMotionListener(MouseMotionAdapter)
@@ -121,11 +123,7 @@ object MouseMotionAdapter : MouseMotionAdapter() {
 }
 
 fun drawCellWinStreak(canvas: Canvas, game: GameFiled) {
-    val paint = Paint().apply {
-        color = Color.makeRGB(0, 0, 0)
-        mode = PaintMode.STROKE
-        strokeWidth = 1f
-    }
+
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
     val font = Font(typeface, 13f)
 
@@ -133,6 +131,12 @@ fun drawCellWinStreak(canvas: Canvas, game: GameFiled) {
     val y: Int = (State.mouseY / game.currentSquareSize).toInt() + game.cornerY
 
     if (!game.contains(x, y) || !game.getCell(x, y).isAlive) return
+
+    val paint = Paint().apply {
+        game.getCell(x, y).color
+        mode = PaintMode.STROKE
+        strokeWidth = 1f
+    }
 
     val text = "alive: ${game.getCell(x, y).winStreak} moves"
     canvas.drawString(text, State.mouseX, State.mouseY, font, paint)
@@ -167,13 +171,14 @@ fun drawFiledLines(canvas: Canvas, game: GameFiled) {
 }
 
 fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
-    val paint = Paint().apply {
-        color = Color.makeRGB(123, 123, 123)
-    }
 
-    for (x in game.cornerX..game.width)
-        for (y in game.cornerY..game.height)
+
+    for (y in game.cornerY..game.height) {
+        for (x in game.cornerX..game.width) {
             if (game.contains(x, y) && game.getCell(x, y).isAlive) {
+                val paint = Paint().apply {
+                    color = Colors.getColor(game.getCell(x, y).color)
+                }
                 canvas.drawRect(
                     Rect.makeXYWH(
                         (x - game.cornerX).toFloat() * game.currentSquareSize,
@@ -183,13 +188,17 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
                     ), paint
                 )
             }
+        }
+    }
 }
 
 fun pressed(game: GameFiled) {
     val x: Int = (State.mouseX / game.currentSquareSize).toInt() + game.cornerX
     val y: Int = (State.mouseY / game.currentSquareSize).toInt() + game.cornerY
     if (!game.contains(x, y)) return
-    game.getCell(x, y).isAlive = !game.getCell(x, y).isAlive
+    val cell = game.getCell(x, y)
+    cell.color = if (cell.isAlive) Colors.deadColor() else GlobalVariables.currentColor
+    cell.isAlive = !cell.isAlive
     game.getCell(x, y).winStreak = 0
 }
 

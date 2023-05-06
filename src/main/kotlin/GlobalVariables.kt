@@ -12,5 +12,7 @@ class GlobalVariables {
         var needToSurvive = listOf(2, 3)
         var needToBurn = listOf(3)
 
+        var currentColor = 1
+
     }
 }

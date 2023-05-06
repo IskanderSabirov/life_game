@@ -26,7 +26,7 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         Cell(it % (width + 2), it / (width + 2))
     }
 
-    inner class Cell(private val x: Int, private val y: Int) {
+    inner class Cell(private val x: Int, private val y: Int, var color: Int = 0) {
         var isAlive = false
         var willLive = false
         var winStreak: Int = 0
@@ -43,6 +43,8 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         fun changeState() {
             willLive =
                 this.countAliveNeighbours() in if (isAlive) GlobalVariables.needToSurvive else GlobalVariables.needToBurn
+            if (!willLive && isAlive)
+                color = Colors.deadColor()
         }
 
         fun isInFiled() = this.x in (1..width) && this.y in (1..height)
@@ -78,6 +80,8 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
     fun generateField() {
         field.filter { it.isInFiled() }.forEach {
             it.isAlive = (0..10).random() >= 7
+            if (it.isAlive)
+                it.color = Colors.getRandomColor()
         }
     }
 
@@ -85,6 +89,7 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         field.forEach {
             it.isAlive = false
             it.winStreak = 0
+            it.color = Colors.deadColor()
         }
     }
 
