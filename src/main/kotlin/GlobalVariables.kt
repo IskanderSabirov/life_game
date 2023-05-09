@@ -1,5 +1,4 @@
-class GlobalVariables {
-    companion object {
+object GlobalVariables {
 
         const val minimumSquareSize = 5
 
@@ -14,5 +13,4 @@ class GlobalVariables {
 
         var currentColor = 1
 
-    }
 }

@@ -173,8 +173,8 @@ fun drawFiledLines(canvas: Canvas, game: GameFiled) {
 fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
 
 
-    for (y in game.cornerY..game.height) {
-        for (x in game.cornerX..game.width) {
+    for (y in game.cornerY..game.height)
+        for (x in game.cornerX..game.width)
             if (game.contains(x, y) && game.getCell(x, y).isAlive) {
                 val paint = Paint().apply {
                     color = Colors.getColor(game.getCell(x, y).color)
@@ -188,8 +188,6 @@ fun drawFieldSquares(canvas: Canvas, game: GameFiled) {
                     ), paint
                 )
             }
-        }
-    }
 }
 
 fun pressed(game: GameFiled) {
