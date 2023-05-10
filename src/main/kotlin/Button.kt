@@ -1,7 +1,7 @@
-import org.jetbrains.skija.Paint
-import org.jetbrains.skija.Rect
+//import org.jetbrains.skija.Paint
+//import org.jetbrains.skija.Rect
 import java.awt.Dimension
-import java.io.File
+//import java.io.File
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JOptionPane
@@ -21,13 +21,6 @@ abstract class MyButton(label: String, val game: GameFiled) : JButton(label) {
 
 }
 
-class Button(game: GameFiled) : MyButton("First Button", game) {
-
-    override fun action() {
-        println("pressed button!")
-    }
-}
-
 class OneMoveButton(game: GameFiled) : MyButton("Make one move", game) {
     override fun action() {
         game.makeOneMove()
@@ -40,20 +33,17 @@ class GenerateFieldButton(game: GameFiled) : MyButton("Generate Field", game) {
     }
 }
 
-
 class ClearFieldButton(game: GameFiled) : MyButton("Clear Field", game) {
     override fun action() {
         game.clearField()
     }
 }
 
-
 class StartButton(game: GameFiled) : MyButton("Start", game) {
     override fun action() {
         game.isGoing = true
     }
 }
-
 
 class StopButton(game: GameFiled) : MyButton("Stop", game) {
     override fun action() {
@@ -72,7 +62,6 @@ class MakeAnyMovesButton(game: GameFiled) : MyButton("Make some moves", game) {
             game.makeMoves(n)
     }
 }
-
 
 class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
     override fun action() {
@@ -112,12 +101,17 @@ class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
 
 }
 
-class AddNewColorButton(game: GameFiled) : MyButton("Add new color", game) {
+class AddNewColorButton(game: GameFiled) : MyButton("Choose colors number", game) {
     override fun action() {
-        Colors.addNewColor()
+        val res = JOptionPane.showInputDialog(
+            null,
+            "Write how many colors do you want use:"
+        ) ?: return
+        if (res.toIntOrNull() == null)
+            showError("Incorrect number")
+        Colors.setColorCount(res.toIntOrNull()!!)
     }
 }
-
 
 class ChooseColorButton(game: GameFiled) : MyButton("Choose current color", game) {
     override fun action() {
@@ -136,99 +130,16 @@ class ChooseColorButton(game: GameFiled) : MyButton("Choose current color", game
 
 class SaveGame(game: GameFiled) : MyButton("Save game", game) {
     override fun action() {
-        val file = File(GlobalVariables.lastGame)
-
-        if (!file.exists())
-            return
-
-        file.writeText("${game.width} ${game.height} \n")
-
-        file.appendText("${game.currentSquareSize}\n")
-
-        GlobalVariables.needToBurn.forEach {
-            file.appendText("$it ")
-        }
-        file.appendText("\n")
-
-        GlobalVariables.needToSurvive.forEach {
-            file.appendText("$it ")
-        }
-        file.appendText("\n")
-
-        file.appendText("${Colors.colorsCount()}\n")
-
-        game.saveGame(file)
+        saveGame(game)
     }
 }
 
 class LoadGame(game: GameFiled) : MyButton("Load game", game) {
     override fun action() {
-        val file = File(GlobalVariables.lastGame)
-
-        val lines = file.readLines()
-
-        if (lines.size != 6) {
-            showError("Incorrect data in file to download game")
-            return
-        }
-
-        val sizes = splitSize(lines[0])
-        val squareSize = lines[1].toIntOrNull()
-        val toBurn = splitNeededTo(lines[2])
-        val toSurvive = splitNeededTo(lines[3])
-        val colorCount = lines[4].toIntOrNull()
-
-        if (squareSize == null || sizes == null || toBurn == null || toSurvive == null || colorCount == null) {
-            showError("Incorrect data in file`s information to download file")
-            return
-        }
-
-        val cells = mutableListOf<Int>()
-
-        lines[5].split(" ").filter { it != "" }.forEach {
-            val tmp = it.toIntOrNull()
-            if (tmp == null || tmp !in (0..colorCount)) {
-                showError("Incorrect data about cell in file")
-                return
-            }
-            cells.add(tmp)
-        }
-
-        if (cells.size != (sizes[0] + 2) * (sizes[1] + 2)) {
-            showError("Incorrect count of cells in file")
-            return
-        }
-
-        Colors.setColorCount(colorCount)
-
-        game.setFiled(sizes[0], sizes[1], cells, squareSize)
-
-    }
-
-    private fun splitSize(string: String): MutableList<Int>? {
-        val answer = mutableListOf<Int>()
-        string.split(" ").filter { it != "" }.forEach {
-            val tmp = it.toIntOrNull() ?: return null
-            answer.add(tmp)
-        }
-        if (answer.size != 2)
-            return null
-        return answer
-    }
-
-    private fun splitNeededTo(string: String): MutableList<Int>? {
-        val answer = mutableListOf<Int>()
-        string.split(" ").filter { it != "" }.forEach {
-            val tmp = it.toIntOrNull() ?: return null
-            if (tmp !in (1..8))
-                return answer
-            answer.add(tmp)
-        }
-        return answer
+        loadGame(game)
     }
 
 }
-
 
 fun showError(message: String) {
     JOptionPane.showMessageDialog(null, message)

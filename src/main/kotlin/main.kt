@@ -80,10 +80,29 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         }
     }
 
+    val windowListener = object : WindowListener {
+        override fun windowOpened(e: WindowEvent?) {
+            loadRules(game)
+//            loadGame(game)
+        }
+
+        override fun windowClosing(e: WindowEvent?) {
+            saveRules(game)
+//            saveGame(game)
+        }
+
+        override fun windowClosed(e: WindowEvent?) {}
+        override fun windowIconified(e: WindowEvent?) {}
+        override fun windowDeiconified(e: WindowEvent?) {}
+        override fun windowActivated(e: WindowEvent?) {}
+        override fun windowDeactivated(e: WindowEvent?) {}
+
+    }
+
     window.layer.addMouseListener(mouseListener)
     window.layer.addKeyListener(keyListener)
     window.layer.addMouseWheelListener(wheelListener)
-    window.setSize(GlobalVariables.windowWidth, GlobalVariables.windowHeight)
+    window.addWindowListener(windowListener)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true
@@ -143,7 +162,6 @@ fun drawCellWinStreak(canvas: Canvas, game: GameFiled) {
     val text = "alive: ${game.getCell(x, y).winStreak} moves"
     canvas.drawString(text, State.mouseX, State.mouseY, font, paint)
 }
-
 
 fun drawFiledLines(canvas: Canvas, game: GameFiled) {
     val paint = Paint().apply {

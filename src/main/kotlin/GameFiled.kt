@@ -3,6 +3,7 @@ import java.io.File
 class GameFiled(var width: Int = 20, var height: Int = 20) {
 
     private val defaultSquareSize = 20
+
     var currentSquareSize = defaultSquareSize
 
     var cornerX = 1
@@ -22,10 +23,11 @@ class GameFiled(var width: Int = 20, var height: Int = 20) {
 
     var isGoing = false
 
-
     private var field: List<Cell> = (0 until (width + 2) * (height + 2)).map {
         Cell(it % (width + 2), it / (width + 2))
     }
+
+    /////////////////////////////
 
     inner class Cell(private val x: Int, private val y: Int, var color: Int = 0) {
         var nextMoveColor = 0
@@ -128,10 +130,10 @@ class GameFiled(var width: Int = 20, var height: Int = 20) {
         }
     }
 
-    fun setFiled(width: Int, height: Int, colors: MutableList<Int>, squareSize: Int) {
+    fun setFiled(width: Int, height: Int, colors: MutableList<Int>) {
         cornerX = 1
         cornerY = 1
-        currentSquareSize = squareSize
+        GlobalVariables.currentColor = 1
         this.width = width
         this.height = height
         field = (0 until (width + 2) * (height + 2)).map {
@@ -141,4 +143,5 @@ class GameFiled(var width: Int = 20, var height: Int = 20) {
             }
         }
     }
+
 }

@@ -21,7 +21,7 @@ object Colors {
 
     fun getRandomColor() = (1..colorsCount).random()
 
-    fun addNewColor() {
+    private fun addNewColor() {
         colorsCount++
         var color = Color.makeRGB((0..255).random(), (0..255).random(), (0..255).random())
         while (data.contains(color))

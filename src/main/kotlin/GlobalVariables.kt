@@ -13,5 +13,6 @@ object GlobalVariables {
 
     var currentColor = 1
 
-    const val lastGame = "src/last_game.txt"
+    const val lastGame = "src/last_game_field.txt"
+    const val lastRules = "src/last_game_rules.txt"
 }
