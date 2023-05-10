@@ -120,11 +120,12 @@ class AddNewColorButton(game: GameFiled) : MyButton("Add new color", game) {
 
 class ChooseColorButton(game: GameFiled) : MyButton("Choose current color", game) {
     override fun action() {
-        val result = JOptionPane.showInputDialog(
+        val res = JOptionPane.showInputDialog(
             null,
             "Write chosen color (1 - ${Colors.colorsCount}):"
-        ).toIntOrNull()
-        if (result == null || result < 1 ||result > Colors.colorsCount)
+        ) ?: return
+        val result = res.toIntOrNull()
+        if (result == null || result < 1 || result > Colors.colorsCount)
             JOptionPane.showMessageDialog(null, "Incorrect data to change rules")
 
         GlobalVariables.currentColor = result!!

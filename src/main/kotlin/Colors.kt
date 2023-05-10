@@ -12,9 +12,9 @@ object Colors {
 
     fun addNewColor() {
         colorsCount++
-        var color = Color.makeRGB((1..255).random(), (1..255).random(), (1..255).random())
+        var color = Color.makeRGB((0..255).random(), (0..255).random(), (0..255).random())
         while (data.contains(color))
-            color = Color.makeRGB((1..255).random(), (1..255).random(), (1..255).random())
+            color = Color.makeRGB((0..255).random(), (0..255).random(), (0..255).random())
         data.add(color)
     }
 }
