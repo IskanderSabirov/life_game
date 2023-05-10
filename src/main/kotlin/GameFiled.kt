@@ -1,4 +1,6 @@
-class GameFiled(val width: Int = 20, val height: Int = 20) {
+import java.io.File
+
+class GameFiled(var width: Int = 20, var height: Int = 20) {
 
     private val defaultSquareSize = 20
     var currentSquareSize = defaultSquareSize
@@ -18,11 +20,10 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         Pair(-1, 1)
     )
 
-
     var isGoing = false
 
 
-    private val field: List<Cell> = (0 until (width + 2) * (height + 2)).map {
+    private var field: List<Cell> = (0 until (width + 2) * (height + 2)).map {
         Cell(it % (width + 2), it / (width + 2))
     }
 
@@ -91,14 +92,12 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
             it.color = it.nextMoveColor
         }
 
-//        Thread.sleep(100)
     }
 
 
     fun makeMoves(count: Int) {
         repeat(count) {
             makeOneMove()
-//            Thread.sleep(100)
         }
     }
 
@@ -123,5 +122,22 @@ class GameFiled(val width: Int = 20, val height: Int = 20) {
         return (x in (1..width) && y in (1..height))
     }
 
+    fun saveGame(file: File) {
+        field.forEach {
+            file.appendText("${it.color} ")
+        }
+    }
 
+    fun setFiled(width: Int, height: Int, colors: MutableList<Int>) {
+        cornerX = 1
+        cornerY = 1
+        this.width = width
+        this.height = height
+        field = (0 until (width + 2) * (height + 2)).map {
+            Cell(it % (width + 2), it / (width + 2), colors[it]).apply {
+                if(colors[it]!=Colors.deadColor())
+                    this.isAlive = true
+            }
+        }
+    }
 }

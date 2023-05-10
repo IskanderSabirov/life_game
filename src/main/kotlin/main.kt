@@ -32,7 +32,7 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.layer.renderer = Renderer(window.layer, game)
 
     window.add(JPanel().apply {
-        layout = GridLayout(9, 1, 3, 3)
+        layout = GridLayout(10, 1, 3, 3)
         add(OneMoveButton(game))
         add(GenerateFieldButton(game))
         add(ClearFieldButton(game))
@@ -42,6 +42,8 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         add(ChangeRulesButton(game))
         add(AddNewColorButton(game))
         add(ChooseColorButton(game))
+        add(SaveGame(game))
+        add(LoadGame(game))
     }, BorderLayout.WEST)
 
     window.layer.addMouseMotionListener(MouseMotionAdapter)
