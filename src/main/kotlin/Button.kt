@@ -2,16 +2,19 @@
 //import org.jetbrains.skija.Rect
 import java.awt.Dimension
 //import java.io.File
+//import java.io.File
 import javax.swing.JButton
+//import javax.swing.JFileChooser
 import javax.swing.JFrame
 import javax.swing.JOptionPane
+//import javax.swing.filechooser.FileNameExtensionFilter
 
 abstract class MyButton(label: String, val game: GameFiled) : JButton(label) {
     init {
         this.addActionListener {
             this.action()
         }
-        preferredSize = Dimension(150, 50)
+        preferredSize = Dimension(120, 50)
         background = background.darker()
         isBorderPainted = false
         isFocusPainted = false
@@ -24,6 +27,7 @@ abstract class MyButton(label: String, val game: GameFiled) : JButton(label) {
 class OneMoveButton(game: GameFiled) : MyButton("Make one move", game) {
     override fun action() {
         game.makeOneMove()
+//        chooseFile()
     }
 }
 
@@ -51,7 +55,7 @@ class StopButton(game: GameFiled) : MyButton("Stop", game) {
     }
 }
 
-class MakeAnyMovesButton(game: GameFiled) : MyButton("Make some moves", game) {
+class MakeAnyMovesButton(game: GameFiled) : MyButton("Make moves", game) {
     override fun action() {
         val frame = JFrame()
         val string = JOptionPane.showInputDialog(frame, "How many moves do you want?") ?: return
@@ -101,7 +105,7 @@ class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
 
 }
 
-class AddNewColorButton(game: GameFiled) : MyButton("Choose colors number", game) {
+class AddNewColorButton(game: GameFiled) : MyButton("Configure colors", game) {
     override fun action() {
         val res = JOptionPane.showInputDialog(
             null,
@@ -113,7 +117,7 @@ class AddNewColorButton(game: GameFiled) : MyButton("Choose colors number", game
     }
 }
 
-class ChooseColorButton(game: GameFiled) : MyButton("Choose current color", game) {
+class ChooseColorButton(game: GameFiled) : MyButton("Choose color", game) {
     override fun action() {
         val res = JOptionPane.showInputDialog(
             null,
@@ -130,13 +134,13 @@ class ChooseColorButton(game: GameFiled) : MyButton("Choose current color", game
 
 class SaveGame(game: GameFiled) : MyButton("Save game", game) {
     override fun action() {
-        saveGame(game)
+        saveWithChoose(game)
     }
 }
 
 class LoadGame(game: GameFiled) : MyButton("Load game", game) {
     override fun action() {
-        loadGame(game)
+        loadWithChoose(game)
     }
 
 }

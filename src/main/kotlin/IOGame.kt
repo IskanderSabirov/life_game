@@ -1,7 +1,9 @@
 import java.io.File
+import javax.swing.JFileChooser
+//import javax.swing.JOptionPane
+import javax.swing.filechooser.FileNameExtensionFilter
 
-fun saveGame(game: GameFiled) {
-    val file = File(GlobalVariables.lastGame)
+fun saveGame(game: GameFiled, file: File) {
 
     if (!file.exists())
         return
@@ -59,10 +61,9 @@ fun loadRules(game: GameFiled) {
 
 }
 
-fun loadGame(game: GameFiled) {
-    val file = File(GlobalVariables.lastGame)
+fun loadGame(game: GameFiled, fileName: File) {
 
-    val lines = file.readLines()
+    val lines = fileName.readLines()
 
     if (lines.size != 6) {
         showError("Incorrect data in file to download game")
@@ -126,3 +127,40 @@ fun splitNeededTo(string: String): MutableList<Int>? {
     }
     return answer
 }
+
+fun chooseFile(): File? {
+    val chooser = JFileChooser()
+    val filter = FileNameExtensionFilter(
+        "*.txt files", "txt"
+    )
+    chooser.fileFilter = filter
+    val ret = chooser.showDialog(null, "Открыть файл")
+    if (ret == JFileChooser.APPROVE_OPTION) {
+        val file = chooser.selectedFile
+        if (file.extension != "txt")
+            return null
+//        println("$file")
+        return file
+
+    }
+    return null
+}
+
+fun loadWithChoose(game: GameFiled) {
+    val file = chooseFile()
+    if (file == null) {
+        showError("Incorrect file to save or download")
+        return
+    }
+    loadGame(game, file)
+}
+
+fun saveWithChoose(game: GameFiled) {
+    val file = chooseFile()
+    if (file == null) {
+        showError("Incorrect file to save or download")
+        return
+    }
+    saveGame(game, file)
+}
+

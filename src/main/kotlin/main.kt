@@ -11,13 +11,19 @@ import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.event.*
 import java.awt.event.MouseMotionAdapter
+//import javax.swing.JFrame
+import javax.swing.JOptionPane
+//import javax.swing.JFileChooser
 import javax.swing.JPanel
 import javax.swing.WindowConstants
+import kotlin.system.exitProcess
+
+//import kotlin.system.exitProcess
 
 
 fun main() {
     FlatLightLaf.setup()
-    createWindow("Life Game", GameFiled(100, 100))
+    createWindow("Life Game", GameFiled())
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
@@ -25,6 +31,7 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         setLocationRelativeTo(null)
         preferredSize = Dimension(GlobalVariables.windowWidth, GlobalVariables.windowHeight)
         isResizable = false
+        isVisible = true
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
         this.title = title
     }
@@ -32,19 +39,25 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.layer.renderer = Renderer(window.layer, game)
 
     window.add(JPanel().apply {
-        layout = GridLayout(10, 1, 3, 3)
-        add(OneMoveButton(game))
-        add(GenerateFieldButton(game))
-        add(ClearFieldButton(game))
+        layout = GridLayout(5, 1, 1, 1)
         add(StartButton(game))
         add(StopButton(game))
-        add(MakeAnyMovesButton(game))
+        add(GenerateFieldButton(game))
+        add(ClearFieldButton(game))
         add(ChangeRulesButton(game))
+    }, BorderLayout.WEST)
+
+    window.add(JPanel().apply {
+        layout = GridLayout(6, 1, 1, 1)
+        add(OneMoveButton(game))
+        add(MakeAnyMovesButton(game))
         add(AddNewColorButton(game))
         add(ChooseColorButton(game))
         add(SaveGame(game))
         add(LoadGame(game))
-    }, BorderLayout.WEST)
+    }, BorderLayout.EAST)
+
+
 
     window.layer.addMouseMotionListener(MouseMotionAdapter)
 
@@ -83,15 +96,25 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     val windowListener = object : WindowListener {
         override fun windowOpened(e: WindowEvent?) {
             loadRules(game)
+            val answer = JOptionPane.showConfirmDialog(null, "Do you want download game?")
+            if (answer == JOptionPane.YES_OPTION)
+                loadWithChoose(game)
 //            loadGame(game)
         }
 
         override fun windowClosing(e: WindowEvent?) {
             saveRules(game)
+            val answer = JOptionPane.showConfirmDialog(null, "Do you want save this game?")
+            if (answer == JOptionPane.YES_OPTION)
+                saveWithChoose(game)
 //            saveGame(game)
+            exitProcess(0)
         }
 
-        override fun windowClosed(e: WindowEvent?) {}
+        override fun windowClosed(e: WindowEvent?) {
+            println("Thank you for a game!")
+        }
+
         override fun windowIconified(e: WindowEvent?) {}
         override fun windowDeiconified(e: WindowEvent?) {}
         override fun windowActivated(e: WindowEvent?) {}
@@ -105,7 +128,6 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
     window.addWindowListener(windowListener)
     window.pack()
     window.layer.awaitRedraw()
-    window.isVisible = true
 }
 
 class Renderer(private val layer: SkiaLayer, private var game: GameFiled) : SkiaRenderer {

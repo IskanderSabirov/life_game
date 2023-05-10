@@ -1,6 +1,7 @@
 import java.io.File
+import javax.swing.JOptionPane
 
-class GameFiled(var width: Int = 20, var height: Int = 20) {
+class GameFiled(var width: Int = 1024, var height: Int = 1024) {
 
     private val defaultSquareSize = 20
 
@@ -80,12 +81,17 @@ class GameFiled(var width: Int = 20, var height: Int = 20) {
 
     fun getCell(x: Int, y: Int): Cell = field[y * (width + 2) + x]
 
-    fun makeOneMove() {
+    fun makeOneMove(): Boolean {
+
+        var isChanged = false
 
         field.filter { it.isInFiled() }.forEach {
             it.changeState()
         }
         field.filter { it.isInFiled() }.forEach {
+
+            isChanged = (it.isAlive != it.willLive) || isChanged
+
             if (it.isAlive && it.willLive)
                 it.winStreak++
             else
@@ -94,12 +100,19 @@ class GameFiled(var width: Int = 20, var height: Int = 20) {
             it.color = it.nextMoveColor
         }
 
+        if (!isChanged) {
+            JOptionPane.showMessageDialog(null, "The moves stopped because the field didn't change")
+            isGoing = false
+        }
+
+        return isChanged
     }
 
 
     fun makeMoves(count: Int) {
         repeat(count) {
-            makeOneMove()
+            if (!makeOneMove())
+                return
         }
     }
 
