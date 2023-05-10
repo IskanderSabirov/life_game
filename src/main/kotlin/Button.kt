@@ -143,6 +143,8 @@ class SaveGame(game: GameFiled) : MyButton("Save game", game) {
 
         file.writeText("${game.width} ${game.height} \n")
 
+        file.appendText("${game.currentSquareSize}\n")
+
         GlobalVariables.needToBurn.forEach {
             file.appendText("$it ")
         }
@@ -165,24 +167,25 @@ class LoadGame(game: GameFiled) : MyButton("Load game", game) {
 
         val lines = file.readLines()
 
-        if (lines.size != 5) {
+        if (lines.size != 6) {
             showError("Incorrect data in file to download game")
             return
         }
 
         val sizes = splitSize(lines[0])
-        val toBurn = splitNeededTo(lines[1])
-        val toSurvive = splitNeededTo(lines[2])
-        val colorCount = lines[3].toIntOrNull()
+        val squareSize = lines[1].toIntOrNull()
+        val toBurn = splitNeededTo(lines[2])
+        val toSurvive = splitNeededTo(lines[3])
+        val colorCount = lines[4].toIntOrNull()
 
-        if (sizes == null || toBurn == null || toSurvive == null || colorCount == null) {
+        if (squareSize == null || sizes == null || toBurn == null || toSurvive == null || colorCount == null) {
             showError("Incorrect data in file`s information to download file")
             return
         }
 
         val cells = mutableListOf<Int>()
 
-        lines[4].split(" ").filter { it != "" }.forEach {
+        lines[5].split(" ").filter { it != "" }.forEach {
             val tmp = it.toIntOrNull()
             if (tmp == null || tmp !in (0..colorCount)) {
                 showError("Incorrect data about cell in file")
@@ -198,7 +201,7 @@ class LoadGame(game: GameFiled) : MyButton("Load game", game) {
 
         Colors.setColorCount(colorCount)
 
-        game.setFiled(sizes[0], sizes[1], cells)
+        game.setFiled(sizes[0], sizes[1], cells, squareSize)
 
     }
 

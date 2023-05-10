@@ -128,14 +128,15 @@ class GameFiled(var width: Int = 20, var height: Int = 20) {
         }
     }
 
-    fun setFiled(width: Int, height: Int, colors: MutableList<Int>) {
+    fun setFiled(width: Int, height: Int, colors: MutableList<Int>, squareSize: Int) {
         cornerX = 1
         cornerY = 1
+        currentSquareSize = squareSize
         this.width = width
         this.height = height
         field = (0 until (width + 2) * (height + 2)).map {
             Cell(it % (width + 2), it / (width + 2), colors[it]).apply {
-                if(colors[it]!=Colors.deadColor())
+                if (colors[it] != Colors.deadColor())
                     this.isAlive = true
             }
         }
