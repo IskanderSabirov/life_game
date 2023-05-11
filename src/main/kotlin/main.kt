@@ -22,16 +22,8 @@ import kotlin.system.exitProcess
 
 
 fun main() {
-    println(isPalindrome("1232423"))
-    println(isPalindrome(""))
-    println(isPalindrome("a234a234a"))
-    println(isPalindrome("/4=23-a234234a"))
-    println(isPalindrome("a"))
-    println(isPalindrome("1"))
-    println(isPalindrome("ab"))
-    println(isPalindrome("abb"))
-//    FlatLightLaf.setup()
-//    createWindow("Life Game", GameFiled(20,20))
+    FlatLightLaf.setup()
+    createWindow("Life Game", GameFiled(100,100))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
