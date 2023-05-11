@@ -129,12 +129,12 @@ fun splitNeededTo(string: String): MutableList<Int>? {
 }
 
 fun chooseFile(): File? {
-    val chooser = JFileChooser()
+    val chooser = JFileChooser("Choosing game`s file")
     val filter = FileNameExtensionFilter(
         "*.txt files", "txt"
     )
     chooser.fileFilter = filter
-    val ret = chooser.showDialog(null, "Открыть файл")
+    val ret = chooser.showDialog(null, "Choose file")
     if (ret == JFileChooser.APPROVE_OPTION) {
         val file = chooser.selectedFile
         if (file.extension != "txt")
