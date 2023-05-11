@@ -95,8 +95,10 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
 
     val windowListener = object : WindowListener {
         override fun windowOpened(e: WindowEvent?) {
-            loadRules(game)
-            val answer = JOptionPane.showConfirmDialog(null, "Do you want download game?")
+            var answer = JOptionPane.showConfirmDialog(null, "Do you want download last game`s settings?")
+            if (answer == JOptionPane.YES_OPTION)
+                loadRules(game)
+            answer = JOptionPane.showConfirmDialog(null, "Do you want download game?")
             if (answer == JOptionPane.YES_OPTION)
                 loadWithChoose(game)
 //            loadGame(game)
