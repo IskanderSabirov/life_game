@@ -138,9 +138,11 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
     }
 
     fun saveGame(file: File) {
+        val text = StringBuilder()
         field.forEach {
-            file.appendText("${it.color} ")
+            text.append("${it.color} ")
         }
+        file.appendText(text.toString())
     }
 
     fun setFiled(width: Int, height: Int, colors: MutableList<Int>) {

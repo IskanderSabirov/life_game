@@ -8,38 +8,49 @@ fun saveGame(game: GameFiled, file: File) {
     if (!file.exists())
         return
 
-    file.writeText("${game.width} ${game.height} \n")
+    val text = StringBuilder()
 
-    file.appendText("${game.currentSquareSize}\n")
+    text.append("${game.width} ${game.height} \n")
+
+    text.append("${game.currentSquareSize}\n")
 
     GlobalVariables.needToBurn.forEach {
-        file.appendText("$it ")
+        text.append("$it ")
     }
-    file.appendText("\n")
+    text.append("\n")
 
     GlobalVariables.needToSurvive.forEach {
-        file.appendText("$it ")
+        text.append("$it ")
     }
-    file.appendText("\n")
+    text.append("\n")
 
-    file.appendText("${Colors.colorsCount()}\n")
+    text.append("${Colors.colorsCount()}\n")
+
+    file.writeText(text.toString())
 
     game.saveGame(file)
 }
 
 fun saveRules(game: GameFiled) {
     val file = File(GlobalVariables.lastRules)
-    file.writeText("${game.currentSquareSize}\n")
+    val text = StringBuilder()
+
+    text.append("${game.currentSquareSize}\n")
+
 
     GlobalVariables.needToBurn.forEach {
-        file.appendText("$it ")
+        text.append("$it ")
     }
-    file.appendText("\n")
+
+    text.append("\n")
 
     GlobalVariables.needToSurvive.forEach {
-        file.appendText("$it ")
+        text.append("$it ")
     }
-    file.appendText("\n")
+
+    text.append("\n")
+
+    file.writeText(text.toString())
 }
 
 fun loadRules(game: GameFiled) {
