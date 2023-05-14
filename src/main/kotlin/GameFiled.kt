@@ -66,7 +66,7 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
             } else {
                 willLive = false
                 countAliveNeighboursForDead().forEach {
-                    if (it.value in GlobalVariables.needToBurn) {
+                    if (it.value in GlobalVariables.needToBorn) {
                         nextMoveColor = it.key
                         willLive = true
                     }

@@ -9,7 +9,7 @@ object GlobalVariables {
     const val windowHeight = 20 * 30
 
     var needToSurvive = listOf(2, 3)
-    var needToBurn = listOf(3)
+    var needToBorn = listOf(3)
 
     var currentColor = 1
 

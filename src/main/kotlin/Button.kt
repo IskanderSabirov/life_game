@@ -7,6 +7,7 @@ import javax.swing.JButton
 //import javax.swing.JFileChooser
 import javax.swing.JFrame
 import javax.swing.JOptionPane
+
 //import javax.swing.filechooser.FileNameExtensionFilter
 
 abstract class MyButton(label: String, val game: GameFiled) : JButton(label) {
@@ -67,16 +68,20 @@ class MakeAnyMovesButton(game: GameFiled) : MyButton("Make moves", game) {
     }
 }
 
+enum class Rule {
+    SURVIVE, BORN
+}
+
 class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
     override fun action() {
-        change("survive")
-        change("burn")
+        change(Rule.BORN)
+        change(Rule.SURVIVE)
     }
 
-    private fun change(whatChange: String) {
-        if (whatChange != "survive" && whatChange != "burn")
+    private fun change(whatChange: Rule) {
+        if (whatChange != Rule.SURVIVE && whatChange != Rule.BORN)
             return
-        val result = JOptionPane.showConfirmDialog(null, "Do you want change rules to $whatChange?")
+        val result = JOptionPane.showConfirmDialog(null, "Do you want change rules to ${whatChange}?")
         if (result == JOptionPane.YES_OPTION) {
             val string = JOptionPane.showInputDialog(
                 null,
@@ -84,8 +89,8 @@ class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
             )
             val newRule = parseStringToInt(string) ?: return
             when (whatChange) {
-                "survive" -> GlobalVariables.needToSurvive = newRule
-                else -> GlobalVariables.needToBurn = newRule
+                Rule.SURVIVE -> GlobalVariables.needToSurvive = newRule
+                else -> GlobalVariables.needToBorn = newRule
             }
         }
     }
@@ -148,13 +153,3 @@ class LoadGame(game: GameFiled) : MyButton("Load game", game) {
 fun showError(message: String) {
     JOptionPane.showMessageDialog(null, message)
 }
-
-
-
-
-
-
-
-
-
-

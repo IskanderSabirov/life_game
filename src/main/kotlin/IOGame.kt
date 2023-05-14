@@ -14,7 +14,7 @@ fun saveGame(game: GameFiled, file: File) {
 
     text.append("${game.currentSquareSize}\n")
 
-    GlobalVariables.needToBurn.forEach {
+    GlobalVariables.needToBorn.forEach {
         text.append("$it ")
     }
     text.append("\n")
@@ -38,7 +38,7 @@ fun saveRules(game: GameFiled) {
     text.append("${game.currentSquareSize}\n")
 
 
-    GlobalVariables.needToBurn.forEach {
+    GlobalVariables.needToBorn.forEach {
         text.append("$it ")
     }
 
@@ -60,14 +60,14 @@ fun loadRules(game: GameFiled) {
         return
     }
     val squareSize = lines[0].toIntOrNull()
-    val toBurn = splitNeededTo(lines[1])
+    val toBorn = splitNeededTo(lines[1])
     val toSurvive = splitNeededTo(lines[2])
-    if (squareSize == null || toBurn == null || toSurvive == null) {
+    if (squareSize == null || toBorn == null || toSurvive == null) {
         showError("Incorrect data in last game rules")
         return
     }
     game.currentSquareSize = squareSize
-    GlobalVariables.needToBurn = toBurn
+    GlobalVariables.needToBorn = toBorn
     GlobalVariables.needToSurvive = toSurvive
 
 }
@@ -77,18 +77,18 @@ fun loadGame(game: GameFiled, fileName: File) {
     val lines = fileName.readLines()
 
     if (lines.size != 6) {
-        showError("Incorrect data in file to download game")
+        showError("Incorrect data in file to load game")
         return
     }
 
     val sizes = splitSize(lines[0])
     val squareSize = lines[1].toIntOrNull()
-    val toBurn = splitNeededTo(lines[2])
+    val toBorn = splitNeededTo(lines[2])
     val toSurvive = splitNeededTo(lines[3])
     val colorCount = lines[4].toIntOrNull()
 
-    if (squareSize == null || sizes == null || toBurn == null || toSurvive == null || colorCount == null) {
-        showError("Incorrect data in file`s information to download file")
+    if (squareSize == null || sizes == null || toBorn == null || toSurvive == null || colorCount == null) {
+        showError("Incorrect data in file`s information to load file")
         return
     }
 
@@ -111,7 +111,7 @@ fun loadGame(game: GameFiled, fileName: File) {
     Colors.setColorCount(colorCount)
 
     game.currentSquareSize = squareSize
-    GlobalVariables.needToBurn = toBurn
+    GlobalVariables.needToBorn = toBorn
     GlobalVariables.needToSurvive = toSurvive
     game.setFiled(sizes[0], sizes[1], cells)
 
@@ -129,14 +129,13 @@ fun splitSize(string: String): MutableList<Int>? {
 }
 
 fun splitNeededTo(string: String): MutableList<Int>? {
-    val answer = mutableListOf<Int>()
-    string.split(" ").filter { it != "" }.forEach {
-        val tmp = it.toIntOrNull() ?: return null
-        if (tmp !in (1..8))
-            return answer
-        answer.add(tmp)
+
+    val answer = string.split(" ").filter { it != "" }.map { it.toIntOrNull() }
+    if (answer.any { it == null || it !in (1..8) }) {
+        return null
     }
-    return answer
+
+    return (answer as MutableList<Int>) // среда не видит что есть проверки всех элемнтов на null
 }
 
 fun chooseFile(): File? {
@@ -160,7 +159,7 @@ fun chooseFile(): File? {
 fun loadWithChoose(game: GameFiled) {
     val file = chooseFile()
     if (file == null) {
-        showError("Incorrect file to save or download")
+        showError("Incorrect file to save or load")
         return
     }
     loadGame(game, file)
@@ -169,7 +168,7 @@ fun loadWithChoose(game: GameFiled) {
 fun saveWithChoose(game: GameFiled) {
     val file = chooseFile()
     if (file == null) {
-        showError("Incorrect file to save or download")
+        showError("Incorrect file to save or load")
         return
     }
     saveGame(game, file)
