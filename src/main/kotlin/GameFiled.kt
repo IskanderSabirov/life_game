@@ -61,8 +61,9 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
             nextMoveColor = Colors.deadColor()
             if (isAlive) {
                 willLive = countAliveNeighboursForAlive() in Rules.needToSurvive
-                if (willLive)
+                if (willLive) {
                     nextMoveColor = color
+                }
             } else {
                 willLive = false
                 countAliveNeighboursForDead().forEach {

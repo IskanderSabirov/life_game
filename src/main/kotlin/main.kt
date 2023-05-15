@@ -243,5 +243,4 @@ fun pressed(game: GameFiled) {
 fun resizeSquare(change: Int, game: GameFiled) {
     if (game.currentSquareSize - change >= Settings.minimumSquareSize)
         game.currentSquareSize -= change
-//    println(change)
 }

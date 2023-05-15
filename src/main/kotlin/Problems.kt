@@ -2,12 +2,15 @@ fun isPalindrome(s: String): Boolean {
     var i = 0
     var j = s.length - 1
     while (i < j) {
-        while (i < s.length - 1 && !s[i].isLetter())
+        while (i < s.length - 1 && !s[i].isLetter()) {
             ++i
-        while (j > 0 && !s[j].isLetter())
+        }
+        while (j > 0 && !s[j].isLetter()) {
             --j
-        if (i < j && s[i] != s[j])
+        }
+        if (i < j && s[i] != s[j]) {
             return false
+        }
         ++i
         --j
     }
