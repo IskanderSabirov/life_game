@@ -120,8 +120,13 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
     fun generateField() {
         field.filter { it.isInFiled() }.forEach {
             it.isAlive = (0..10).random() >= 7
-            if (it.isAlive)
+            if (it.isAlive) {
                 it.color = Colors.getRandomColor()
+            } else {
+                it.color = Colors.deadColor()
+            }
+            it.nextMoveColor = Colors.deadColor()
+            it.willLive = false
         }
     }
 
@@ -129,6 +134,7 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
         field.forEach {
             it.isAlive = false
             it.winStreak = 0
+            it.nextMoveColor = Colors.deadColor()
             it.color = Colors.deadColor()
         }
     }
