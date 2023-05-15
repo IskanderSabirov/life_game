@@ -1,6 +1,5 @@
 import java.io.File
 import javax.swing.JFileChooser
-//import javax.swing.JOptionPane
 import javax.swing.filechooser.FileNameExtensionFilter
 
 fun saveGame(game: GameFiled, file: File) {
@@ -14,12 +13,12 @@ fun saveGame(game: GameFiled, file: File) {
 
     text.append("${game.currentSquareSize}\n")
 
-    GlobalVariables.needToBorn.forEach {
+    Rules.needToBorn.forEach {
         text.append("$it ")
     }
     text.append("\n")
 
-    GlobalVariables.needToSurvive.forEach {
+    Rules.needToSurvive.forEach {
         text.append("$it ")
     }
     text.append("\n")
@@ -32,19 +31,19 @@ fun saveGame(game: GameFiled, file: File) {
 }
 
 fun saveRules(game: GameFiled) {
-    val file = File(GlobalVariables.lastRules)
+    val file = File(Rules.lastRules)
     val text = StringBuilder()
 
     text.append("${game.currentSquareSize}\n")
 
 
-    GlobalVariables.needToBorn.forEach {
+    Rules.needToBorn.forEach {
         text.append("$it ")
     }
 
     text.append("\n")
 
-    GlobalVariables.needToSurvive.forEach {
+    Rules.needToSurvive.forEach {
         text.append("$it ")
     }
 
@@ -54,7 +53,7 @@ fun saveRules(game: GameFiled) {
 }
 
 fun loadRules(game: GameFiled) {
-    val lines = File(GlobalVariables.lastRules).readLines()
+    val lines = File(Rules.lastRules).readLines()
     if (lines.size != 3) {
         showError("Incorrect lines count in last game rules file")
         return
@@ -67,8 +66,8 @@ fun loadRules(game: GameFiled) {
         return
     }
     game.currentSquareSize = squareSize
-    GlobalVariables.needToBorn = toBorn
-    GlobalVariables.needToSurvive = toSurvive
+    Rules.needToBorn = toBorn
+    Rules.needToSurvive = toSurvive
 
 }
 
@@ -111,8 +110,8 @@ fun loadGame(game: GameFiled, fileName: File) {
     Colors.setColorCount(colorCount)
 
     game.currentSquareSize = squareSize
-    GlobalVariables.needToBorn = toBorn
-    GlobalVariables.needToSurvive = toSurvive
+    Rules.needToBorn = toBorn
+    Rules.needToSurvive = toSurvive
     game.setFiled(sizes[0], sizes[1], cells)
 
 }
@@ -146,12 +145,7 @@ fun chooseFile(): File? {
     chooser.fileFilter = filter
     val ret = chooser.showDialog(null, "Choose file")
     if (ret == JFileChooser.APPROVE_OPTION) {
-        val file = chooser.selectedFile
-        if (file.extension != "txt")
-            return null
-//        println("$file")
-        return file
-
+        return chooser.selectedFile
     }
     return null
 }

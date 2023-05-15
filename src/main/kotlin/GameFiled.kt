@@ -60,13 +60,13 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
         fun changeState() {
             nextMoveColor = Colors.deadColor()
             if (isAlive) {
-                willLive = countAliveNeighboursForAlive() in GlobalVariables.needToSurvive
+                willLive = countAliveNeighboursForAlive() in Rules.needToSurvive
                 if (willLive)
                     nextMoveColor = color
             } else {
                 willLive = false
                 countAliveNeighboursForDead().forEach {
-                    if (it.value in GlobalVariables.needToBorn) {
+                    if (it.value in Rules.needToBorn) {
                         nextMoveColor = it.key
                         willLive = true
                     }
@@ -148,7 +148,7 @@ class GameFiled(var width: Int = 1024, var height: Int = 1024) {
     fun setFiled(width: Int, height: Int, colors: MutableList<Int>) {
         cornerX = 1
         cornerY = 1
-        GlobalVariables.currentColor = 1
+        Colors.currentColor = 1
         this.width = width
         this.height = height
         field = (0 until (width + 2) * (height + 2)).map {

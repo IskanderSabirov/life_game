@@ -1,14 +1,7 @@
-//import org.jetbrains.skija.Paint
-//import org.jetbrains.skija.Rect
 import java.awt.Dimension
-//import java.io.File
-//import java.io.File
 import javax.swing.JButton
-//import javax.swing.JFileChooser
 import javax.swing.JFrame
 import javax.swing.JOptionPane
-
-//import javax.swing.filechooser.FileNameExtensionFilter
 
 abstract class MyButton(label: String, val game: GameFiled) : JButton(label) {
     init {
@@ -79,8 +72,7 @@ class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
     }
 
     private fun change(whatChange: Rule) {
-        if (whatChange != Rule.SURVIVE && whatChange != Rule.BORN)
-            return
+
         val result = JOptionPane.showConfirmDialog(null, "Do you want change rules to ${whatChange}?")
         if (result == JOptionPane.YES_OPTION) {
             val string = JOptionPane.showInputDialog(
@@ -89,8 +81,8 @@ class ChangeRulesButton(game: GameFiled) : MyButton("Change rules", game) {
             )
             val newRule = parseStringToInt(string) ?: return
             when (whatChange) {
-                Rule.SURVIVE -> GlobalVariables.needToSurvive = newRule
-                else -> GlobalVariables.needToBorn = newRule
+                Rule.SURVIVE -> Rules.needToSurvive = newRule
+                else -> Rules.needToBorn = newRule
             }
         }
     }
@@ -132,7 +124,7 @@ class ChooseColorButton(game: GameFiled) : MyButton("Choose color", game) {
         if (result == null || result < 1 || result > Colors.colorsCount())
             showError("Incorrect data to change rules")
 
-        GlobalVariables.currentColor = result!!
+        Colors.currentColor = result!!
 
     }
 }

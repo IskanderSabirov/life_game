@@ -1,5 +1,4 @@
-object GlobalVariables {
-
+object Settings {
     const val minimumSquareSize = 5
 
     const val minimalCorner = 1
@@ -8,11 +7,13 @@ object GlobalVariables {
 
     const val windowHeight = 20 * 30
 
+}
+
+object Rules {
     var needToSurvive = listOf(2, 3)
+
     var needToBorn = listOf(3)
 
-    var currentColor = 1
-
-//    const val lastGame = "src/last_game_field.txt"
     const val lastRules = "src/last_game_rules.txt"
+
 }

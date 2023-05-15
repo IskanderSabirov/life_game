@@ -11,25 +11,20 @@ import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.event.*
 import java.awt.event.MouseMotionAdapter
-//import javax.swing.JFrame
 import javax.swing.JOptionPane
-//import javax.swing.JFileChooser
 import javax.swing.JPanel
 import javax.swing.WindowConstants
 import kotlin.system.exitProcess
 
-//import kotlin.system.exitProcess
-
-
 fun main() {
     FlatLightLaf.setup()
-    createWindow("Life Game", GameFiled(100,100))
+    createWindow("Life Game", GameFiled(1024,1024))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow().apply {
         setLocationRelativeTo(null)
-        preferredSize = Dimension(GlobalVariables.windowWidth, GlobalVariables.windowHeight)
+        preferredSize = Dimension(Settings.windowWidth, Settings.windowHeight)
         isResizable = false
         isVisible = true
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
@@ -77,9 +72,9 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
         override fun keyReleased(e: KeyEvent) {}
         override fun keyPressed(e: KeyEvent) {
             when (e.keyCode) {
-                KeyEvent.VK_W -> if (game.cornerY > GlobalVariables.minimalCorner) game.cornerY--
+                KeyEvent.VK_W -> if (game.cornerY > Settings.minimalCorner) game.cornerY--
                 KeyEvent.VK_S -> if (game.cornerY < game.height) game.cornerY++
-                KeyEvent.VK_A -> if (game.cornerX > GlobalVariables.minimalCorner) game.cornerX--
+                KeyEvent.VK_A -> if (game.cornerX > Settings.minimalCorner) game.cornerX--
                 KeyEvent.VK_D -> if (game.cornerX < game.width) game.cornerX++
             }
         }
@@ -95,10 +90,10 @@ fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing
 
     val windowListener = object : WindowListener {
         override fun windowOpened(e: WindowEvent?) {
-            var answer = JOptionPane.showConfirmDialog(null, "Do you want download last game`s settings?")
+            var answer = JOptionPane.showConfirmDialog(null, "Do you want load last game`s settings?")
             if (answer == JOptionPane.YES_OPTION)
                 loadRules(game)
-            answer = JOptionPane.showConfirmDialog(null, "Do you want download game?")
+            answer = JOptionPane.showConfirmDialog(null, "Do you want load game?")
             if (answer == JOptionPane.YES_OPTION)
                 loadWithChoose(game)
 //            loadGame(game)
@@ -240,13 +235,13 @@ fun pressed(game: GameFiled) {
     if (!game.contains(x, y)) return
     val cell = game.getCell(x, y)
     cell.color =
-        if (cell.color != GlobalVariables.currentColor || !cell.isAlive) GlobalVariables.currentColor else Colors.deadColor()
-    cell.isAlive = (cell.color == GlobalVariables.currentColor)
+        if (cell.color != Colors.currentColor || !cell.isAlive) Colors.currentColor else Colors.deadColor()
+    cell.isAlive = (cell.color == Colors.currentColor)
     game.getCell(x, y).winStreak = 0
 }
 
 fun resizeSquare(change: Int, game: GameFiled) {
-    if (game.currentSquareSize - change >= GlobalVariables.minimumSquareSize)
+    if (game.currentSquareSize - change >= Settings.minimumSquareSize)
         game.currentSquareSize -= change
 //    println(change)
 }
