@@ -108,8 +108,10 @@ class AddNewColorButton(game: GameFiled) : MyButton("Configure colors", game) {
             null,
             "Write how many colors do you want use:"
         ) ?: return
-        if (res.toIntOrNull() == null)
+        if (res.toIntOrNull() == null) {
             showError("Incorrect number")
+            return
+        }
         Colors.setColorCount(res.toIntOrNull()!!)
     }
 }
@@ -121,10 +123,12 @@ class ChooseColorButton(game: GameFiled) : MyButton("Choose color", game) {
             "Write chosen color (1 - ${Colors.colorsCount()}):"
         ) ?: return
         val result = res.toIntOrNull()
-        if (result == null || result < 1 || result > Colors.colorsCount())
+        if (result == null || result < 1 || result > Colors.colorsCount()) {
             showError("Incorrect data to change rules")
+            return
+        }
 
-        Colors.currentColor = result!!
+        Colors.currentColor = result
 
     }
 }
