@@ -24,4 +24,19 @@ internal class Tests {
 
         assertFalse(isPalindrome("---a///23/234b./"))
     }
+
+    @Test
+    fun testIteratorOfIterators() {
+        val list1 = listOf(1,2,3,4,5,6,7,8,9)
+        val list2 = listOf("a", "b", "c")
+        val list3 = listOf(true, false, true)
+
+        val iterators = listOf(list1.iterator(), list2.iterator(), list3.iterator())
+
+        val iteratorOfIterators = IteratorOfIterators(iterators)
+        while (iteratorOfIterators.hasNext()) {
+            println(iteratorOfIterators.next())
+        }
+        assertFalse(iteratorOfIterators.hasNext())
+    }
 }

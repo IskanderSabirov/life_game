@@ -18,7 +18,7 @@ import kotlin.system.exitProcess
 
 fun main() {
     FlatLightLaf.setup()
-    createWindow("Life Game", GameFiled(100,100))
+    createWindow("Life Game", GameFiled(1024,1024))
 }
 
 fun createWindow(title: String, game: GameFiled) = runBlocking(Dispatchers.Swing) {

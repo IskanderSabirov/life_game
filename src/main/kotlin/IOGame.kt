@@ -134,6 +134,7 @@ fun splitNeededTo(string: String): MutableList<Int>? {
         return null
     }
 
+    @Suppress("UNCHECKED_CAST")
     return (answer as MutableList<Int>) // среда не видит что есть проверки всех элемнтов на null
 }
 

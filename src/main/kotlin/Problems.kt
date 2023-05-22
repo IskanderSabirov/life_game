@@ -18,6 +18,25 @@ fun isPalindrome(s: String): Boolean {
 }
 
 
-fun createClassToFindRobots(){
+fun createClassToFindRobots() {
     //TODO: делал реализацию данного класса на практике у доски (класс должен считать кол-во роботов и возвращать их кол-во в моменте
+}
+
+class IteratorOfIterators<T>(private val iterators: List<Iterator<T>>) : Iterator<T> {
+
+    private var currentIteratorIndex: Int = 0
+
+    override fun hasNext(): Boolean {
+        while (currentIteratorIndex < iterators.size && !iterators[currentIteratorIndex].hasNext()) {
+            currentIteratorIndex++
+        }
+        return currentIteratorIndex < iterators.size
+    }
+
+    override fun next(): T {
+        if (!hasNext()) {
+            throw NoSuchElementException()
+        }
+        return iterators[currentIteratorIndex].next()
+    }
 }
